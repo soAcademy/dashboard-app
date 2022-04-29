@@ -23,13 +23,14 @@ export const DeathCause = () => {
       }))
       .sort((a, b) => b.totalDeath - a.totalDeath);
     const _provinces = [...new Set(data.map((row) => row.provinceName))];
-    const _deathByProvinces = _provinces.map((province) => ({
-      province,
-      totalDeath: data
-        .filter((s) => s.provinceName === province)
-        .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
-    }))
-    .sort((a, b) => b.totalDeath - a.totalDeath);
+    const _deathByProvinces = _provinces
+      .map((province) => ({
+        province,
+        totalDeath: data
+          .filter((s) => s.provinceName === province)
+          .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
+      }))
+      .sort((a, b) => b.totalDeath - a.totalDeath);
 
     setCauseOfDeaths(_causeOfDeaths);
     setCauseOfDeathsList(_causeOfDeathsList);
@@ -37,9 +38,13 @@ export const DeathCause = () => {
     setDeathByProvinces(_deathByProvinces);
   }, data);
 
-  const ListComponent = ({ title, number, percentage }) => (
-    <li className="hover:bg-blue-100">
-      <div className="w-full flex px-2 py cursor-pointer">
+  const ListComponent = ({ title, number, percentage, enabledCursor }) => (
+    <li className={enabledCursor ? `hover:bg-blue-100` : ""}>
+      <div
+        className={`w-full flex px-2 py ${
+          enabledCursor ? "cursor-pointer" : "pointer"
+        }`}
+      >
         <div className="w-3/5 mr-2">{title}</div>
         <div className="w-2/5">
           <div className="flex w-full text-xs text-white">
@@ -58,14 +63,15 @@ export const DeathCause = () => {
       <h1 className="font-bold text-2xl">
         จำนวนผู้เสียชีวิต สาเหตุ และอัตราการตาย ปี 2554 - 2559 {data.length}
       </h1>
-      <div className="w-full flex mt-4 gap-x-4">
+      <div className="w-full flex mt-4 gap-x-4" style={{"max-height": "90vh"}}>
         <div className="border border-gray-200 w-5/12">
           <h3 className="font-bold p-2">สาเหตุการเสียชีวิต</h3>
-          <ul className="text-sm">
+          <ul className="text-sm bg-scroll overflow-scroll" style={{"max-height": "85vh"}}>
             <ListComponent
               title="ทั้งหมด"
               number={totalDeath}
               percentage="100%"
+              enabledCursor={true}
             />
             {causeOfDeathsList.map((row, idx) => (
               <ListComponent
@@ -74,13 +80,14 @@ export const DeathCause = () => {
                 percentage={`${((row.totalDeath / totalDeath) * 100).toFixed(
                   2
                 )}%`}
+                enabledCursor={true}
               />
             ))}
           </ul>
         </div>
         <div className="border border-gray-200 flex-auto">
-        <h3 className="font-bold p-2">จำนวนผู้เสียชีวิตแยกตามจังหวัด</h3>
-          <ul className="text-sm">
+          <h3 className="font-bold p-2">จำนวนผู้เสียชีวิตแยกตามจังหวัด</h3>
+          <ul className="text-sm overflow-scroll" style={{"max-height": "85vh"}}>
             <ListComponent
               title="ทั้งหมด"
               number={totalDeath}
