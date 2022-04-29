@@ -12,9 +12,8 @@ export const DeathCause = () => {
 
   useEffect(() => {
     const dataByYear = data.filter((r) => r.year === selectedYear);
-    console.log(data);
     const _causeOfDeaths = [...new Set(dataByYear.map((row) => row.causeOfDeath))];
-    const _totalDeath = data.reduce(
+    const _totalDeath = dataByYear.reduce(
       (acc, row) => acc + row.deathMale + row.deathFemale,
       0
     );
@@ -40,7 +39,7 @@ export const DeathCause = () => {
     setCauseOfDeathsList(_causeOfDeathsList);
     setTotalDeath(_totalDeath);
     setDeathByProvinces(_deathByProvinces);
-  }, data);
+  }, [data, selectedYear]);
 
   const ListComponent = ({ title, number, percentage, enabledCursor }) => (
     <li className={enabledCursor ? `hover:bg-blue-100` : ""}>
@@ -69,7 +68,7 @@ export const DeathCause = () => {
       </h1>
       <div>
         เลือกปี:{" "}
-        <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+        <select value={selectedYear} onChange={(e) => setSelectedYear(+e.target.value)}>
           {yearsList.map((year) => (
             <option value={year}>
               {year}
