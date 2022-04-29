@@ -12,7 +12,8 @@ export const DeathCause = () => {
   const [totalDeath, setTotalDeath] = useState(0);
   const [deathByProvinces, setDeathByProvinces] = useState([]);
   const [deathBySex, setDeathBySex] = useState({ male: 0, female: 0 });
-  const [piechartOptions, setPieChartOptions] = useState({});
+  const [lineChartOptions, setLineChartOptions] = useState({});
+  const [pieChartOptions, setPieChartOptions] = useState({});
 
   useEffect(() => {
     const dataFilter = data.filter((r) => r.year === selectedYear);
@@ -57,7 +58,36 @@ export const DeathCause = () => {
       female:
         dataFilterByCause.reduce((acc, row) => acc + row.deathFemale, 0) ?? 0,
     };
-    const _piechartOptions = {
+
+    const _lineChartOptions = {
+      xAxis: {
+        type: "category",
+        data: yearsList,
+      },
+      yAxis: {
+        type: "value",
+      },
+      series: [
+        {
+          data: yearsList
+            .reverse()
+            .map((year) =>
+              data
+                .filter(
+                  (row) =>
+                    row.year === year &&
+                    (row.causeOfDeath === selectedCause ||
+                      selectedCause === null ||
+                      selectedCause === "ทั้งหมด")
+                )
+                .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0)
+            ),
+          type: "line",
+          smooth: true,
+        },
+      ],
+    };
+    const _pieChartOptions = {
       tooltip: {
         trigger: "item",
       },
@@ -83,14 +113,15 @@ export const DeathCause = () => {
           },
         },
       ],
-    }
+    };
 
     setCauseOfDeaths(_causeOfDeaths);
     setCauseOfDeathsList(_causeOfDeathsList);
     setTotalDeath(_totalDeath);
     setDeathByProvinces(_deathByProvinces);
     setDeathBySex(_deathBySex);
-    setPieChartOptions(_piechartOptions);
+    setLineChartOptions(_lineChartOptions);
+    setPieChartOptions(_pieChartOptions);
   }, [data, selectedYear, selectedCause]);
 
   const ListComponent = ({
@@ -190,12 +221,21 @@ export const DeathCause = () => {
           </ul>
         </div>
         <div className="border border-gray-200 w-1/4 p-2">
+          <h3 className="font-bold">แนวโน้มการเสียชีวิต</h3>
+          <div className="mt-2">
+            <ReactECharts
+              option={lineChartOptions}
+              notMerge={true}
+              lazyUpdate={true}
+              theme={"theme_name"}
+            />
+          </div>
           <h3 className="font-bold">จำนวนผู้เสียชีวิตแยกตามเพศ</h3>
           <div className="text-sm mt-2">
             <p>ชาย: {deathBySex.male.toLocaleString()} คน</p>
             <p>หญิง: {deathBySex.female.toLocaleString()} คน</p>
             <ReactECharts
-              option={piechartOptions}
+              option={pieChartOptions}
               notMerge={true}
               lazyUpdate={true}
               theme={"theme_name"}
