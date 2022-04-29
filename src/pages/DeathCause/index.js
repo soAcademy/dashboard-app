@@ -1,5 +1,6 @@
 import ThailandDeathCauseData from "../../data/thailand-death-cause.json";
 import React, { useState, useEffect } from "react";
+import ReactECharts from "echarts-for-react";
 
 export const DeathCause = () => {
   const [data, setData] = useState(ThailandDeathCauseData);
@@ -10,6 +11,8 @@ export const DeathCause = () => {
   const [causeOfDeathsList, setCauseOfDeathsList] = useState([]);
   const [totalDeath, setTotalDeath] = useState(0);
   const [deathByProvinces, setDeathByProvinces] = useState([]);
+  const [deathBySex, setDeathBySex] = useState({ male: 0, female: 0 });
+  const [piechartOptions, setPieChartOptions] = useState({});
 
   useEffect(() => {
     const dataFilter = data.filter((r) => r.year === selectedYear);
@@ -43,11 +46,51 @@ export const DeathCause = () => {
           .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
       }))
       .sort((a, b) => b.totalDeath - a.totalDeath);
+    const dataFilterByCause = dataFilter.filter(
+      (s) =>
+        s.causeOfDeath === selectedCause ||
+        selectedCause === null ||
+        selectedCause === "ทั้งหมด"
+    );
+    const _deathBySex = {
+      male: dataFilterByCause.reduce((acc, row) => acc + row.deathMale, 0) ?? 0,
+      female:
+        dataFilterByCause.reduce((acc, row) => acc + row.deathFemale, 0) ?? 0,
+    };
+    const _piechartOptions = {
+      tooltip: {
+        trigger: "item",
+      },
+      legend: {
+        orient: "vertical",
+        left: "left",
+      },
+      series: [
+        {
+          name: "เพศ",
+          type: "pie",
+          radius: "50%",
+          data: [
+            { value: _deathBySex.male, name: "ชาย" },
+            { value: _deathBySex.female, name: "หญิง" },
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
+    }
 
     setCauseOfDeaths(_causeOfDeaths);
     setCauseOfDeathsList(_causeOfDeathsList);
     setTotalDeath(_totalDeath);
     setDeathByProvinces(_deathByProvinces);
+    setDeathBySex(_deathBySex);
+    setPieChartOptions(_piechartOptions);
   }, [data, selectedYear, selectedCause]);
 
   const ListComponent = ({
@@ -95,7 +138,9 @@ export const DeathCause = () => {
           ))}
         </select>
       </div>
-      <div className="mt-2">ปี {selectedYear} :: สาเหตุการเสียชีวิต: {selectedCause}</div>
+      <div className="mt-2">
+        ปี {selectedYear} :: สาเหตุการเสียชีวิต: {selectedCause}
+      </div>
       <div className="w-full flex mt-4 gap-x-4" style={{ maxHeight: "80vh" }}>
         <div className="border border-gray-200 w-5/12">
           <h3 className="font-bold p-2">สาเหตุการเสียชีวิตปี {selectedYear}</h3>
@@ -144,7 +189,19 @@ export const DeathCause = () => {
             ))}
           </ul>
         </div>
-        <div className="bg-red-300 w-1/4">C</div>
+        <div className="border border-gray-200 w-1/4 p-2">
+          <h3 className="font-bold">จำนวนผู้เสียชีวิตแยกตามเพศ</h3>
+          <div className="text-sm mt-2">
+            <p>ชาย: {deathBySex.male.toLocaleString()} คน</p>
+            <p>หญิง: {deathBySex.female.toLocaleString()} คน</p>
+            <ReactECharts
+              option={piechartOptions}
+              notMerge={true}
+              lazyUpdate={true}
+              theme={"theme_name"}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
