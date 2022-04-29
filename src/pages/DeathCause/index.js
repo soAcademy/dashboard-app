@@ -13,12 +13,14 @@ export const DeathCause = () => {
       (acc, row) => acc + row.deathMale + row.deathFemale,
       0
     );
-    const _causeOfDeathsList = _causeOfDeaths.map((causeOfDeath) => ({
-      causeOfDeath,
-      totalDeath: data
-        .filter((s) => s.causeOfDeath === causeOfDeath)
-        .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
-    }));
+    const _causeOfDeathsList = _causeOfDeaths
+      .map((causeOfDeath) => ({
+        causeOfDeath,
+        totalDeath: data
+          .filter((s) => s.causeOfDeath === causeOfDeath)
+          .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
+      }))
+      .sort((a, b) => b.totalDeath - a.totalDeath);
 
     setCauseOfDeaths(_causeOfDeaths);
     setCauseOfDeathsList(_causeOfDeathsList);
@@ -26,12 +28,14 @@ export const DeathCause = () => {
   }, data);
 
   const ListComponent = ({ title, number, percentage }) => (
-    <li>
-      <div className="w-full flex">
-        <div className="w-3/5">{title}</div>
+    <li className="hover:bg-blue-100">
+      <div className="w-full flex px-2 py cursor-pointer">
+        <div className="w-3/5 mr-2">{title}</div>
         <div className="w-2/5">
           <div className="flex w-full text-xs text-white">
-            <div className="w-1/2 bg-blue-800 text-right pr-2">{number.toLocaleString()}</div>
+            <div className="w-1/2 bg-blue-800 text-right pr-2">
+              {number.toLocaleString()}
+            </div>
             <div className="w-1/2 bg-teal-600 pl-2">{percentage}%</div>
           </div>
         </div>
@@ -45,12 +49,20 @@ export const DeathCause = () => {
         จำนวนผู้เสียชีวิต สาเหตุ และอัตราการตาย ปี 2554 - 2559 {data.length}
       </h1>
       <div className="w-full flex mt-4 gap-x-4">
-        <div className="border border-gray-200 w-5/12 p-2">
-          <h3 className="font-bold">สาเหตุการเสียชีวิต</h3>
+        <div className="border border-gray-200 w-5/12">
+          <h3 className="font-bold p-2">สาเหตุการเสียชีวิต</h3>
           <ul className="text-sm">
-            <ListComponent title="ทั้งหมด" number={totalDeath} percentage="100" />
-            {causeOfDeathsList.map((row) => (
-            <ListComponent title={row.causeOfDeath} number={row.totalDeath} percentage="100" />
+            <ListComponent
+              title="ทั้งหมด"
+              number={totalDeath}
+              percentage="100"
+            />
+            {causeOfDeathsList.map((row, idx) => (
+              <ListComponent
+                title={row.causeOfDeath}
+                number={row.totalDeath}
+                percentage={`${(row.totalDeath / totalDeath * 100).toFixed(2)}%`}
+              />
             ))}
           </ul>
         </div>
