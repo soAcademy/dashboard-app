@@ -6,6 +6,7 @@ export const DeathCause = () => {
   const [causeOfDeaths, setCauseOfDeaths] = useState([]);
   const [causeOfDeathsList, setCauseOfDeathsList] = useState([]);
   const [totalDeath, setTotalDeath] = useState(0);
+  const [deathByProvinces, setDeathByProvinces] = useState([]);
 
   useEffect(() => {
     const _causeOfDeaths = [...new Set(data.map((row) => row.causeOfDeath))];
@@ -21,10 +22,19 @@ export const DeathCause = () => {
           .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
       }))
       .sort((a, b) => b.totalDeath - a.totalDeath);
+    const _provinces = [...new Set(data.map((row) => row.provinceName))];
+    const _deathByProvinces = _provinces.map((province) => ({
+      province,
+      totalDeath: data
+        .filter((s) => s.provinceName === province)
+        .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
+    }))
+    .sort((a, b) => b.totalDeath - a.totalDeath);
 
     setCauseOfDeaths(_causeOfDeaths);
     setCauseOfDeathsList(_causeOfDeathsList);
     setTotalDeath(_totalDeath);
+    setDeathByProvinces(_deathByProvinces);
   }, data);
 
   const ListComponent = ({ title, number, percentage }) => (
@@ -36,7 +46,7 @@ export const DeathCause = () => {
             <div className="w-1/2 bg-blue-800 text-right pr-2">
               {number.toLocaleString()}
             </div>
-            <div className="w-1/2 bg-teal-600 pl-2">{percentage}%</div>
+            <div className="w-1/2 bg-teal-600 pl-2">{percentage}</div>
           </div>
         </div>
       </div>
@@ -55,18 +65,38 @@ export const DeathCause = () => {
             <ListComponent
               title="ทั้งหมด"
               number={totalDeath}
-              percentage="100"
+              percentage="100%"
             />
             {causeOfDeathsList.map((row, idx) => (
               <ListComponent
                 title={row.causeOfDeath}
                 number={row.totalDeath}
-                percentage={`${(row.totalDeath / totalDeath * 100).toFixed(2)}%`}
+                percentage={`${((row.totalDeath / totalDeath) * 100).toFixed(
+                  2
+                )}%`}
               />
             ))}
           </ul>
         </div>
-        <div className="flex-auto">B</div>
+        <div className="border border-gray-200 flex-auto">
+        <h3 className="font-bold p-2">จำนวนผู้เสียชีวิตแยกตามจังหวัด</h3>
+          <ul className="text-sm">
+            <ListComponent
+              title="ทั้งหมด"
+              number={totalDeath}
+              percentage="100%"
+            />
+            {deathByProvinces.map((row, idx) => (
+              <ListComponent
+                title={row.province}
+                number={row.totalDeath}
+                percentage={`${((row.totalDeath / totalDeath) * 100).toFixed(
+                  2
+                )}%`}
+              />
+            ))}
+          </ul>
+        </div>
         <div className="bg-red-300 w-1/4">C</div>
       </div>
     </div>
