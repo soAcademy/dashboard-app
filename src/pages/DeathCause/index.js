@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 export const DeathCause = () => {
   const [data, setData] = useState(ThailandDeathCauseData);
   const [selectedYear, setSelectedYear] = useState(2559);
+  const [selectedCause, setSelectedCause] = useState(null);
   const yearsList = [2559, 2558, 2557, 2556, 2555, 2554];
   const [causeOfDeaths, setCauseOfDeaths] = useState([]);
   const [causeOfDeathsList, setCauseOfDeathsList] = useState([]);
@@ -11,26 +12,34 @@ export const DeathCause = () => {
   const [deathByProvinces, setDeathByProvinces] = useState([]);
 
   useEffect(() => {
-    const dataByYear = data.filter((r) => r.year === selectedYear);
-    const _causeOfDeaths = [...new Set(dataByYear.map((row) => row.causeOfDeath))];
-    const _totalDeath = dataByYear.reduce(
+    const dataFilter = data.filter((r) => r.year === selectedYear);
+    const _causeOfDeaths = [
+      ...new Set(dataFilter.map((row) => row.causeOfDeath)),
+    ];
+    const _totalDeath = dataFilter.reduce(
       (acc, row) => acc + row.deathMale + row.deathFemale,
       0
     );
     const _causeOfDeathsList = _causeOfDeaths
       .map((causeOfDeath) => ({
         causeOfDeath,
-        totalDeath: dataByYear
+        totalDeath: dataFilter
           .filter((s) => s.causeOfDeath === causeOfDeath)
           .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
       }))
       .sort((a, b) => b.totalDeath - a.totalDeath);
-    const _provinces = [...new Set(dataByYear.map((row) => row.provinceName))];
+    const _provinces = [...new Set(dataFilter.map((row) => row.provinceName))];
     const _deathByProvinces = _provinces
       .map((province) => ({
         province,
-        totalDeath: dataByYear
-          .filter((s) => s.provinceName === province)
+        totalDeath: dataFilter
+          .filter(
+            (s) =>
+              s.provinceName === province &&
+              (s.causeOfDeath === selectedCause ||
+                selectedCause === null ||
+                selectedCause === "ทั้งหมด")
+          )
           .reduce((acc, row) => acc + row.deathMale + row.deathFemale, 0),
       }))
       .sort((a, b) => b.totalDeath - a.totalDeath);
@@ -39,10 +48,19 @@ export const DeathCause = () => {
     setCauseOfDeathsList(_causeOfDeathsList);
     setTotalDeath(_totalDeath);
     setDeathByProvinces(_deathByProvinces);
-  }, [data, selectedYear]);
+  }, [data, selectedYear, selectedCause]);
 
-  const ListComponent = ({ title, number, percentage, enabledCursor }) => (
-    <li className={enabledCursor ? `hover:bg-blue-100` : ""}>
+  const ListComponent = ({
+    title,
+    number,
+    percentage,
+    enabledCursor,
+    setSelected,
+  }) => (
+    <li
+      className={enabledCursor ? `hover:bg-blue-100` : ""}
+      onClick={enabledCursor ? () => setSelected(title) : null}
+    >
       <div
         className={`w-full flex px-2 py ${
           enabledCursor ? "cursor-pointer" : "pointer"
@@ -66,31 +84,31 @@ export const DeathCause = () => {
       <h1 className="font-bold text-2xl">
         จำนวนผู้เสียชีวิต สาเหตุ และอัตราการตาย ปี 2554 - 2559
       </h1>
-      <div>
+      <div className="mt-2">
         เลือกปี:{" "}
-        <select value={selectedYear} onChange={(e) => setSelectedYear(+e.target.value)}>
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(+e.target.value)}
+        >
           {yearsList.map((year) => (
-            <option value={year}>
-              {year}
-            </option>
+            <option value={year}>{year}</option>
           ))}
         </select>
       </div>
-      <div
-        className="w-full flex mt-4 gap-x-4"
-        style={{ maxHeight: "90vh" }}
-      >
+      <div className="mt-2">ปี {selectedYear} :: สาเหตุการเสียชีวิต: {selectedCause}</div>
+      <div className="w-full flex mt-4 gap-x-4" style={{ maxHeight: "80vh" }}>
         <div className="border border-gray-200 w-5/12">
           <h3 className="font-bold p-2">สาเหตุการเสียชีวิตปี {selectedYear}</h3>
           <ul
             className="text-sm bg-scroll overflow-scroll"
-            style={{ maxHeight: "85vh" }}
+            style={{ maxHeight: "75vh" }}
           >
             <ListComponent
               title="ทั้งหมด"
               number={totalDeath}
               percentage="100%"
               enabledCursor={true}
+              setSelected={setSelectedCause}
             />
             {causeOfDeathsList.map((row, idx) => (
               <ListComponent
@@ -100,16 +118,16 @@ export const DeathCause = () => {
                   2
                 )}%`}
                 enabledCursor={true}
+                setSelected={setSelectedCause}
               />
             ))}
           </ul>
         </div>
         <div className="border border-gray-200 flex-auto">
-          <h3 className="font-bold p-2">จำนวนผู้เสียชีวิตแยกตามจังหวัดปี {selectedYear}</h3>
-          <ul
-            className="text-sm overflow-scroll"
-            style={{ maxHeight: "85vh" }}
-          >
+          <h3 className="font-bold p-2">
+            จำนวนผู้เสียชีวิตแยกตามจังหวัดปี {selectedYear}
+          </h3>
+          <ul className="text-sm overflow-scroll" style={{ maxHeight: "75vh" }}>
             <ListComponent
               title="ทั้งหมด"
               number={totalDeath}
