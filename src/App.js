@@ -11,6 +11,7 @@ const App = () => (
       <Sidebar />
       <div className="pl-16 w-full">
         <Routes>
+          <Route path="/" element={<DeathCause />} />
           <Route path="/death-cause" element={<DeathCause />} />
           <Route path="/zipcode" element={<Zipcode />} />
           <Route path="/zipcode/:province" element={<ZipcodeProvince />} />
