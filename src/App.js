@@ -3,6 +3,7 @@ import { Sidebar } from "./components/Sidebar";
 import { DeathCause } from "./pages/DeathCause";
 import { Zipcode } from "./pages/Zipcode";
 
+
 const App = () => (
   <BrowserRouter>
     <div className="flex">

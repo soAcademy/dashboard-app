@@ -1,5 +1,6 @@
 import ThailandZipcodeData from "../../data/thailand-zipcode.json";
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export const Zipcode = () => {
   const [data, setData] = useState(ThailandZipcodeData);
@@ -25,7 +26,14 @@ export const Zipcode = () => {
           <h2 className="font-bold text-xl">เลือกจังหวัด</h2>
           <div className="grid grid-cols-4 mt-4">
             {provinces.map((province) => (
-              <div>{province}</div>
+              <div>
+                <Link
+                  to={`/zipcode/${province}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {province}
+                </Link>
+              </div>
             ))}
           </div>
         </div>
