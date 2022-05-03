@@ -19,7 +19,6 @@ export const Accident = () => {
         center={[100.523186, 13.736717]}
         zoom={[5]}
       ></Map>
-      ;
     </div>
   );
 };
