@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { DeathCause } from "./pages/DeathCause";
-import { Zipcode } from "./pages/Zipcode";
+import { Zipcode, ZipcodeProvince } from "./pages/Zipcode";
 
 
 const App = () => (
@@ -12,6 +12,7 @@ const App = () => (
         <Routes>
           <Route path="/death-cause" element={<DeathCause />} />
           <Route path="/zipcode" element={<Zipcode />} />
+          <Route path="/zipcode/:province" element={<ZipcodeProvince />} />
         </Routes>
       </div>
     </div>
