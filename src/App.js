@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { DeathCause } from "./pages/DeathCause";
 import { Zipcode, ZipcodeProvince } from "./pages/Zipcode";
-
+import { TodoList } from "./pages/TodoList";
 
 const App = () => (
   <BrowserRouter>
@@ -13,6 +13,7 @@ const App = () => (
           <Route path="/death-cause" element={<DeathCause />} />
           <Route path="/zipcode" element={<Zipcode />} />
           <Route path="/zipcode/:province" element={<ZipcodeProvince />} />
+          <Route path="/todo-list" element={<TodoList />} />
         </Routes>
       </div>
     </div>
