@@ -3,6 +3,7 @@ import { Sidebar } from "./components/Sidebar";
 import { DeathCause } from "./pages/DeathCause";
 import { Zipcode, ZipcodeProvince } from "./pages/Zipcode";
 import { TodoList } from "./pages/TodoList";
+import { Accident } from "./pages/Accident";
 
 const App = () => (
   <BrowserRouter>
@@ -14,6 +15,7 @@ const App = () => (
           <Route path="/zipcode" element={<Zipcode />} />
           <Route path="/zipcode/:province" element={<ZipcodeProvince />} />
           <Route path="/todo-list" element={<TodoList />} />
+          <Route path="/accident" element={<Accident />} />
         </Routes>
       </div>
     </div>
